@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Conversation After Practice — PTSM 7366</title>
+<style>
+  :root {
+    --green: #154734; --gold: #FFB81C;
+    --ink: #12352a; --muted: #5f7068;
+    --soft-green: #e7f1ed; --soft-gold: #fff4d8; --line: #cfddd7;
+    --danger: #b42318; --danger-soft: #ffe5e2;
+    --success: #1f7a46; --success-soft: #e2f5e8;
+    --shadow: 0 22px 60px rgba(21, 71, 52, 0.16);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Proxima Nova", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(255,184,28,0.28), transparent 30rem),
+      linear-gradient(135deg, #f7fbf8 0%, #eef7f3 100%);
+    min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ---- Layout ------------------------------------------------------------
+     Phone-first single column. At the 1366x1366 LMS frame the container
+     widens and vertical rhythm tightens, so activities fit without the
+     retrofitted !important layer the previous course needed.              */
+  main {
+    width: min(100%, 46rem);
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 1.75rem) clamp(0.85rem, 3vw, 1.5rem) 1.25rem;
+  }
+  @media (min-width: 1100px) and (min-height: 900px) {
+    main { width: min(100%, 1180px); padding-top: 1rem; padding-bottom: 1rem; }
+    h1 { font-size: 1.7rem !important; margin-bottom: 0.25rem !important; }
+    .card { padding: 0.85rem 1.1rem; margin-bottom: 0.7rem; }
+    .lede { margin-bottom: 0.2rem; }
+    /* Opt-in helpers: an activity adds these to its own containers. */
+    .fit-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; align-items: start; }
+    .fit-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; align-items: start; }
+    .fit-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; align-items: start; }
+    .fit-2 > *, .fit-3 > *, .fit-4 > * { margin-bottom: 0 !important; }
+    .fit-span { grid-column: 1 / -1; }
+  }
+
+  /* Course banner. Decorative — alt="" and role="presentation" keep it out of
+     the accessibility tree, since it carries no information a student needs.
+     It scales with the container at its natural 20:3 ratio, so it costs about
+     177px of height in the wide frame and only ~56px on a phone. */
+  .course-banner {
+    display: block; width: 100%; height: auto;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: clamp(0.7rem, 2vw, 1rem);
+  }
+  @media (min-width: 1100px) and (min-height: 900px) {
+    .course-banner { margin-bottom: 0.55rem; }
+  }
+  @media print { .course-banner { display: none; } }
+
+  .card {
+    background: rgba(255,255,255,0.94);
+    border: 2px solid rgba(21,71,52,0.1);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: clamp(1rem, 3vw, 1.5rem);
+    margin-bottom: clamp(0.8rem, 2.2vw, 1.15rem);
+  }
+  .eyebrow {
+    display: inline-block; background: var(--soft-gold); color: var(--green);
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; border-radius: 999px;
+    padding: 0.3rem 0.85rem; margin: 0 0 0.65rem;
+  }
+  h1 { color: var(--green); font-size: clamp(1.35rem, 4.5vw, 1.85rem); line-height: 1.2; margin: 0 0 0.5rem; }
+  h2 { color: var(--green); font-size: 1.1rem; margin: 0 0 0.5rem; }
+  h3 { color: var(--green); font-size: 0.98rem; margin: 0 0 0.35rem; }
+  p { line-height: 1.55; margin: 0 0 0.6rem; }
+  .lede { color: var(--muted); font-weight: 600; }
+  .hint { color: var(--muted); font-size: 0.88rem; }
+
+  /* ---- Controls ---------------------------------------------------------- */
+  .btn {
+    min-height: 2.9rem; padding: 0 1.1rem;
+    border: 2px solid var(--green); border-radius: 8px;
+    background: #fff; color: var(--green);
+    font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, opacity 150ms ease;
+  }
+  .btn:not(:disabled):hover, .btn:not(:disabled):focus-visible { background: var(--green); color: #fff; outline: none; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn.primary { background: var(--gold); border-color: var(--gold); }
+  .btn.primary:not(:disabled):hover, .btn.primary:not(:disabled):focus-visible { background: var(--green); border-color: var(--green); color: #fff; }
+  .controls { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.7rem; }
+  .controls .btn { flex: 1 1 10rem; }
+
+  select, input[type="text"], textarea {
+    font: inherit; color: var(--ink); background: #fff;
+    border: 2px solid var(--line); border-radius: 6px;
+    padding: 0.45rem 0.55rem; min-height: 2.6rem;
+  }
+  select:focus-visible, input:focus-visible, textarea:focus-visible,
+  button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
+    outline: 3px solid var(--gold); outline-offset: 2px;
+  }
+
+  /* State signalling always pairs colour with a mark or text (WCAG 1.4.1). */
+  .is-correct { border-color: var(--success) !important; background: var(--success-soft); }
+  .is-wrong   { border-color: var(--danger) !important;  background: var(--danger-soft); }
+  .mark { font-weight: 900; margin-right: 0.3rem; }
+  .mark.ok { color: var(--success); }
+  .mark.no { color: var(--danger); }
+
+  .progress-track { height: 0.55rem; background: var(--soft-green); border-radius: 999px; overflow: hidden; margin-top: 0.6rem; }
+  .progress-fill { height: 100%; width: 0%; background: var(--green); transition: width 220ms ease; }
+
+  /* ---- Completion summary (must report what actually happened) ---------- */
+  #summary[hidden] { display: none; }
+  #summary { border-color: var(--success); }
+  #summary h2 { display: flex; align-items: center; gap: 0.4rem; }
+  .summary-score { font-size: 1.05rem; font-weight: 900; color: var(--green); margin: 0 0 0.6rem; }
+  .summary-list { margin: 0 0 0.6rem; padding-left: 1.1rem; }
+  .summary-list li { margin-bottom: 0.25rem; line-height: 1.45; }
+  .summary-group { margin-bottom: 0.7rem; }
+  .summary-group h3 { margin-bottom: 0.2rem; }
+
+  /* ---- Two-part activities ---------------------------------------------
+     Some modules combine two activities into one sequential experience.
+     Only one part is on screen at a time, so a merged activity costs no more
+     height than the taller of its two halves.                             */
+  .part-steps { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+  .part-step {
+    flex: 1 1 12rem; text-align: left;
+    border: 2px solid var(--line); border-radius: 8px;
+    background: rgba(255,255,255,0.9); color: var(--muted);
+    padding: 0.5rem 0.75rem; font: inherit; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; transition: border-color 150ms ease, color 150ms ease;
+  }
+  .part-step .part-n { display: block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .part-step[aria-current="true"] { border-color: var(--green); color: var(--green); background: var(--soft-green); }
+  .part-step[data-state="done"] { border-color: var(--success); color: var(--success); }
+  .part-step[data-state="done"] .part-n::after { content: " ✓"; }
+  .part-step[data-state="locked"] { opacity: 0.55; cursor: not-allowed; }
+  .part-step[data-state="locked"] .part-n::after { content: " (locked)"; }
+  .part-panel[hidden] { display: none; }
+
+  .visually-hidden {
+    position: absolute !important; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* ---- Finish bar -------------------------------------------------------- */
+  .finish-bar {
+    position: sticky; bottom: 0; z-index: 30;
+    padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+    background: rgba(247, 251, 248, 0.92);
+    backdrop-filter: blur(6px); border-top: 2px solid var(--line);
+  }
+  .finish-button {
+    display: block; width: min(100%, 22rem); margin: 0 auto; min-height: 3rem;
+    border: 2px solid var(--gold); border-radius: 8px;
+    background: var(--gold); color: var(--green);
+    font: inherit; font-weight: 900; font-size: 1.05rem; cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
+  }
+  .finish-button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .finish-button:not(:disabled):hover, .finish-button:not(:disabled):focus-visible {
+    background: var(--green); border-color: var(--green); color: #ffffff; outline: none;
+  }
+  @keyframes finish-pop { 0%{transform:scale(1)} 50%{transform:scale(1.04)} 100%{transform:scale(1)} }
+  .finish-button.enabled-pop { animation: finish-pop 600ms ease 2; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  @media (max-width: 520px) {
+    .controls { flex-direction: column; }
+    .controls .btn { flex: none; width: 100%; }
+    select, input[type="text"] { width: 100%; }
+  }
+
+.maya-setting { margin: 0 0 12px; padding: 10px 14px; border-left: 5px solid var(--gold); background: rgba(255,184,28,.12); border-radius: 0 8px 8px 0; line-height: 1.5; font-size: .95rem; }
+.maya-setting strong { color: var(--green); }
+.maya-path { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; padding: 0; list-style: none; }
+.maya-path li { flex: 1 1 140px; padding: 6px 10px; border-radius: 8px; border: 2px solid rgba(21,71,52,.2); font-size: .85rem; font-weight: 600; background: #fff; }
+.maya-path li.is-current { border-color: var(--green); background: var(--green); color: #fff; }
+.maya-path li.is-done { border-color: var(--green); }
+.maya-path li .mark { margin-left: 4px; }
+.maya-skill { margin: 0 0 6px; font-size: 1.05rem; color: var(--green); }
+.maya-line { margin: 0 0 10px; padding: 10px 14px; border-radius: 8px; background: #f7f7f5; border: 1px solid rgba(0,0,0,.1); line-height: 1.5; font-style: italic; }
+.maya-line strong { font-style: normal; color: var(--green); }
+.maya-prompt { margin: 0 0 8px; font-weight: 600; }
+.maya-options { display: grid; gap: 8px; margin: 10px 0; }
+.maya-opt { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; padding: 10px 12px; border: 2px solid rgba(21,71,52,.35); border-radius: 8px; background: #fff; font: inherit; line-height: 1.4; cursor: pointer; }
+.maya-opt:hover:not(:disabled) { border-color: var(--green); background: rgba(21,71,52,.05); }
+.maya-opt:disabled { cursor: default; opacity: .75; }
+.maya-opt .maya-letter { flex: 0 0 auto; font-weight: 700; color: var(--green); }
+.maya-opt.is-correct { border-color: #1b7a3c; background: #e8f5ec; opacity: 1; }
+.maya-opt.is-wrong { border-color: #b3261e; background: #fbe9e7; opacity: 1; }
+.maya-feedback { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,.12); background: #f7f7f5; line-height: 1.45; }
+.maya-feedback.ok { border-color: #1b7a3c; background: #e8f5ec; }
+.maya-feedback.no { border-color: #b3261e; background: #fbe9e7; }
+.maya-feedback[hidden] { display: none; }
+.maya-consequence { margin: 10px 0 0; padding: 10px 14px; border-radius: 8px; background: rgba(21,71,52,.07); border: 1px solid rgba(21,71,52,.25); line-height: 1.5; }
+.maya-consequence strong { color: var(--green); }
+.maya-ending ul { margin: 8px 0 0; padding-left: 22px; line-height: 1.5; }
+.maya-ending li { margin: 4px 0; }
+</style>
+</head>
+<body>
+<main>
+  
+  <header class="card">
+    <span class="eyebrow">PTSM 7366 · Soul Care in Sports · The Art of Helping</span>
+    <h1>A conversation after practice</h1>
+    <p class="lede">A player stays behind after practice. Choose what you say at each turn. The skills you're practising are attending, responding, personalizing, and initiating — in that order, and only as far as the athlete lets you go.</p>
+  </header>
+
+<p class="maya-setting"><strong>Setting:</strong> You are the chaplain/sport-ministry staff for a college volleyball team. After practice, Maya, a junior setter, lingers while packing her bag. Her coach mentioned this week that she has been "flat."</p>
+
+<ol class="maya-path" id="maya-path" aria-label="Turns">
+  <li data-node="0">1 · Attending</li>
+  <li data-node="1">2 · Attending (observing)</li>
+  <li data-node="2">3 · Responding to content</li>
+  <li data-node="3">4 · Responding to feeling</li>
+  <li data-node="4">5 · Personalizing</li>
+  <li data-node="5">6 · Initiating</li>
+</ol>
+
+<section class="card" id="maya-stage" aria-live="polite">
+  <h2 class="maya-skill" id="maya-title"></h2>
+  <p class="maya-line" id="maya-line"></p>
+  <p class="maya-prompt" id="maya-prompt">What do you say?</p>
+  <div class="maya-options" id="maya-options" role="group" aria-labelledby="maya-prompt"></div>
+  <div class="maya-feedback" id="maya-feedback" hidden></div>
+  <div class="maya-consequence" id="maya-consequence" hidden></div>
+  <div class="controls">
+    <button type="button" class="btn primary" id="maya-next" hidden>Continue</button>
+  </div>
+</section>
+
+<section class="card maya-ending" id="maya-ending" hidden>
+  <h2>Thursday, after lifting</h2>
+  <p>She nods. "Thursday? After lifting?" You put it in your calendar.</p>
+  <p><strong>Recap — the Art of Helping:</strong></p>
+  <ul>
+    <li>Attend before you respond — presence first, then reflection.</li>
+    <li>Respond to content, then feeling, before you personalize.</li>
+    <li>Initiate only a step the athlete names as hers.</li>
+  </ul>
+  <div class="controls">
+    <button type="button" class="btn" id="maya-restart">Start over</button>
+  </div>
+  <p class="hint">Starting over lets you run the conversation again for practice. Your first-attempt score has already been recorded and will not change.</p>
+</section>
+
+  <section id="summary" class="card" hidden aria-labelledby="summary-heading">
+    <h2 id="summary-heading">How you did</h2>
+    <p class="summary-score" id="summary-score"></p>
+    <div id="summary-detail"></div>
+    <p class="hint" id="summary-note"></p>
+  </section>
+</main>
+
+<div id="live-region" class="visually-hidden" role="status" aria-live="polite"></div>
+
+<footer class="finish-bar">
+  <button type="button" id="finish-button" class="finish-button" disabled>Finish</button>
+</footer>
+
+<script>
+/* ---- SCORM 1.2 wrapper. Degrades silently to standalone preview. -------- */
+const SCORM = (() => {
+  let api = null, initialized = false, finished = false;
+  function findApi(win) {
+    let current = win, attempts = 0;
+    try {
+      while (current && !current.API && current.parent && current.parent !== current && attempts < 500) {
+        attempts += 1; current = current.parent;
+      }
+      if (current && current.API) return current.API;
+      if (win.opener && !win.opener.closed) return findApi(win.opener);
+    } catch (e) { return null; }
+    return null;
+  }
+  function call(method, ...args) {
+    if (!api || typeof api[method] !== "function") return "false";
+    try { return api[method](...args); } catch (e) { return "false"; }
+  }
+  function init() {
+    if (initialized) return true;
+    api = findApi(window);
+    if (!api) return false;
+    initialized = call("LMSInitialize", "") === "true";
+    if (initialized) {
+      const prior = call("LMSGetValue", "cmi.core.lesson_status");
+      if (prior !== "completed" && prior !== "passed") {
+        call("LMSSetValue", "cmi.core.lesson_status", "incomplete");
+      }
+      call("LMSSetValue", "cmi.core.score.min", "0");
+      call("LMSSetValue", "cmi.core.score.max", "100");
+      call("LMSCommit", "");
+    }
+    return initialized;
+  }
+  function setScore(raw) {
+    if (!initialized) return;
+    call("LMSSetValue", "cmi.core.score.raw", String(raw));
+    call("LMSCommit", "");
+  }
+  function finishActivity(score) {
+    if (finished) return;
+    if (initialized) {
+      call("LMSSetValue", "cmi.core.lesson_status", "completed");
+      if (score !== null && score !== undefined) call("LMSSetValue", "cmi.core.score.raw", String(score));
+      call("LMSCommit", "");
+      call("LMSFinish", "");
+    }
+    finished = true;
+  }
+  function unloadSafety() {
+    if (finished || !initialized) return;
+    call("LMSCommit", ""); call("LMSFinish", ""); finished = true;
+  }
+  window.addEventListener("pagehide", unloadSafety);
+  window.addEventListener("beforeunload", unloadSafety);
+  return { init, setScore, finishActivity };
+})();
+SCORM.init();
+
+/* ---- Activity API -------------------------------------------------------
+   The only surface an activity script needs. Handles the Finish button,
+   the live region, the score, and the completion summary, so no activity
+   re-implements them (or gets them subtly wrong).                        */
+const Activity = (() => {
+  const finishBtn = document.getElementById("finish-button");
+  const live = document.getElementById("live-region");
+  const summaryEl = document.getElementById("summary");
+  const scoreEl = document.getElementById("summary-score");
+  const detailEl = document.getElementById("summary-detail");
+  const noteEl = document.getElementById("summary-note");
+  let firstScore = null;   // frozen on first completion so review passes can't inflate it
+  let ready = false;
+
+  function announce(msg) { live.textContent = ""; setTimeout(() => { live.textContent = msg; }, 40); }
+
+  function setReady(on, msg) {
+    ready = !!on;
+    finishBtn.disabled = !ready;
+    if (ready) {
+      finishBtn.classList.add("enabled-pop");
+      setTimeout(() => finishBtn.classList.remove("enabled-pop"), 1400);
+      if (msg) announce(msg);
+    }
+  }
+
+  /* Report the truth: right and missed are arrays of plain strings.
+     Passing neither still renders an honest "you finished" line.        */
+  function summarize({ score = null, right = [], missed = [], note = "" } = {}) {
+    if (firstScore === null && score !== null) firstScore = score;
+    const shown = firstScore === null ? null : firstScore;
+    if (shown !== null) {
+      const total = right.length + missed.length;
+      scoreEl.textContent = total
+        ? `${right.length} of ${total} correct on your first attempt — ${shown}%`
+        : `First-attempt score: ${shown}%`;
+    } else {
+      scoreEl.textContent = "Activity complete.";
+    }
+    detailEl.innerHTML = "";
+    const group = (title, items, cls) => {
+      if (!items.length) return;
+      const wrap = document.createElement("div");
+      wrap.className = "summary-group";
+      const h = document.createElement("h3");
+      h.innerHTML = `<span class="mark ${cls === "ok" ? "ok" : "no"}">${cls === "ok" ? "✓" : "✗"}</span>${title}`;
+      const ul = document.createElement("ul");
+      ul.className = "summary-list";
+      items.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+      wrap.appendChild(h); wrap.appendChild(ul); detailEl.appendChild(wrap);
+    };
+    group(`You got these right (${right.length})`, right, "ok");
+    group(`You missed these (${missed.length})`, missed, "no");
+    noteEl.textContent = note || "";
+    summaryEl.hidden = false;
+    summaryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (shown !== null) SCORM.setScore(shown);
+  }
+
+  finishBtn.addEventListener("click", () => {
+    if (!ready) return;
+    SCORM.finishActivity(firstScore);
+    finishBtn.disabled = true;
+    finishBtn.textContent = "Finished ✓";
+    announce("Activity finished and reported as complete.");
+  });
+
+  return { setReady, announce, summarize, get score() { return firstScore; } };
+})();
+
+/* ---- Multi-part coordinator --------------------------------------------
+   For modules that merge two activities into one. Each part reports here
+   instead of calling Activity.setReady / Activity.summarize itself, and only
+   the last part to finish unlocks Finish. Without this, part one would enable
+   the Finish button and a student could submit half an activity.         */
+const Parts = (() => {
+  let expected = 0;
+  const results = new Map();
+  const listeners = [];
+
+  function expect(n) { expected = n; }
+  function isDone(i) { return results.has(i); }
+  function onDone(fn) { listeners.push(fn); }
+
+  function done(index, { score = null, right = [], missed = [], label = "" } = {}) {
+    if (results.has(index)) return;                 // first result stands
+    results.set(index, { score, right, missed, label });
+    listeners.forEach(fn => { try { fn(index); } catch (e) {} });
+    if (results.size < expected) {
+      Activity.announce(`Part ${index} complete. Part ${index + 1} is now available.`);
+      return;
+    }
+    // Merge both parts' results, keeping each item attributed to its part so
+    // the summary says which half a student actually struggled with.
+    // NB: these locals must NOT be named `right` / `missed` — those are already
+    // bound by this function's destructured parameter, and redeclaring them with
+    // const is a SyntaxError that kills the whole inline script silently.
+    const allRight = [], allMissed = [];
+    let weighted = 0, items = 0;
+    [...results.entries()].sort((a, b) => a[0] - b[0]).forEach(([i, r]) => {
+      const tag = r.label ? `${r.label}: ` : `Part ${i}: `;
+      r.right.forEach(t => allRight.push(tag + t));
+      r.missed.forEach(t => allMissed.push(tag + t));
+      const n = r.right.length + r.missed.length;
+      if (r.score !== null && n) { weighted += r.score * n; items += n; }
+      else if (r.score !== null) { weighted += r.score; items += 1; }
+    });
+    const finalScore = items ? Math.round(weighted / items) : null;
+    Activity.setReady(true, "Both parts complete. You can finish the activity.");
+    Activity.summarize({
+      score: finalScore, right: allRight, missed: allMissed,
+      note: "This activity had two parts; the summary above covers both.",
+    });
+  }
+  return { expect, done, isDone, onDone };
+})();
+
+(function () {
+  var NODES = [
+    {
+      name: "Turn 1 — Attending",
+      title: "Turn 1 — Attending",
+      line: "You don't have to wait for me. I'm fine, just slow tonight.",
+      options: [
+        "\"Okay — see you Thursday!\"",
+        "Put your bag down, sit on the bench a few feet away, and say: \"I've got nowhere to be. Mind if I sit?\"",
+        "\"Coach says you've been flat. What's going on?\""
+      ],
+      correct: 1,
+      feedback: [
+        "Attending means staying: your posture, your presence, your time. Leaving accepts the 'fine' at face value.",
+        "",
+        "Leading with the coach's assessment makes this a report, not a conversation, and it's not yet her story to defend."
+      ],
+      consequence: "She shrugs, but she sits too."
+    },
+    {
+      name: "Turn 2 — Attending (observing)",
+      title: "Turn 2 — Attending (observing)",
+      line: "It's just a lot right now. Practice, my organic chem lab, my mom keeps calling.",
+      options: [
+        "\"You should talk to your academic advisor about chem.\"",
+        "Stay quiet a beat, then: \"Sounds like a lot is pulling on you at once.\"",
+        "\"My junior year was like that too. What I did was—\""
+      ],
+      correct: 1,
+      feedback: [
+        "Advice this early skips the whole helping process; you don't know yet what's heavy about it.",
+        "",
+        "Turning to your own story moves the attention off her, which is the opposite of attending."
+      ],
+      consequence: "She exhales. \"Yeah.\""
+    },
+    {
+      name: "Turn 3 — Responding to content",
+      title: "Turn 3 — Responding to content",
+      line: "My mom keeps asking if I'm going to church here. I haven't been since August. I don't even know if I want to.",
+      options: [
+        "\"So you've stopped going, and your mom's questions keep bringing it up.\"",
+        "\"Why don't you want to go?\"",
+        "\"There's a great campus ministry Tuesday nights — I can introduce you.\""
+      ],
+      correct: 0,
+      feedback: [
+        "",
+        "A 'why' question this early asks her to justify herself; respond to what she said before you ask for more.",
+        "An invitation is initiating; you're still at responding. She hasn't said she wants a solution."
+      ],
+      consequence: "\"Every Sunday,\" she says. \"Like clockwork.\""
+    },
+    {
+      name: "Turn 4 — Responding to feeling",
+      title: "Turn 4 — Responding to feeling",
+      line: "I know she means well. But every time she asks I feel like I'm failing at something else on top of everything.",
+      options: [
+        "\"You feel like a failure because you're not going.\"",
+        "\"That sounds exhausting — like one more place you're being measured.\"",
+        "\"Moms are like that. Mine still asks.\""
+      ],
+      correct: 1,
+      feedback: [
+        "Close, but it puts the failure on her rather than reflecting her feeling — and it adds a cause she didn't state.",
+        "",
+        "A reassurance that generalizes her mother away; it's about your experience, not her feeling."
+      ],
+      consequence: "Her eyes fill. \"That's exactly it.\""
+    },
+    {
+      name: "Turn 5 — Personalizing",
+      title: "Turn 5 — Personalizing",
+      line: "I don't even know what I believe right now. I just know I'm tired of feeling behind.",
+      options: [
+        "\"It sounds like part of you wants to figure out what you actually believe — not just what would get your mom to stop asking.\"",
+        "\"Being tired of feeling behind is normal for a junior.\"",
+        "\"Have you read any books on doubt? I have one in my office.\""
+      ],
+      correct: 0,
+      feedback: [
+        "",
+        "Normalizing can comfort, but personalizing names what <em>she</em> wants and what's in the way; this response doesn't.",
+        "Initiating before she has owned the goal. A resource offered now becomes one more expectation."
+      ],
+      consequence: "She's quiet for a while. \"Yeah. I think I want that.\""
+    },
+    {
+      name: "Turn 6 — Initiating",
+      title: "Turn 6 — Initiating",
+      line: "So what do I do?",
+      options: [
+        "\"Go to church this Sunday and see how it feels.\"",
+        "\"You don't have to do anything tonight. If you want, we could find a time this week — no church, no mom — just to talk about what you believe and what's actually true for you right now. Would that be a step you'd want?\"",
+        "\"I think you should call your mom and tell her how you feel.\""
+      ],
+      correct: 1,
+      feedback: [
+        "A step she didn't choose. Initiating helps her define a first step that's hers, at a size she can actually take.",
+        "",
+        "It may be a good step eventually, but it's your step for her; it also puts her back in front of the person she feels measured by."
+      ],
+      consequence: "She nods. \"Thursday? After lifting?\" You put it in your calendar."
+    }
+  ];
+  var LETTERS = ["a", "b", "c"];
+  var RECAP = "Recap: attend before you respond — presence first, then reflection; respond to content, then feeling, before you personalize; initiate only a step the athlete names as hers.";
+
+  var pathEl = document.getElementById("maya-path");
+  var titleEl = document.getElementById("maya-title");
+  var lineEl = document.getElementById("maya-line");
+  var optsEl = document.getElementById("maya-options");
+  var fbEl = document.getElementById("maya-feedback");
+  var conEl = document.getElementById("maya-consequence");
+  var nextBtn = document.getElementById("maya-next");
+  var stageEl = document.getElementById("maya-stage");
+  var endingEl = document.getElementById("maya-ending");
+  var restartBtn = document.getElementById("maya-restart");
+
+  var state;
+  var summarized = false;                                   // summarize() runs exactly once, ever
+  var firstAttempt = [null, null, null, null, null, null];  // first-run, first-pick correctness per turn
+
+  function freshState() {
+    return { idx: 0, phase: "pick", attempts: 0, done: [false, false, false, false, false, false] };
+  }
+
+  function setFeedback(kind, text) {
+    fbEl.className = "maya-feedback " + kind;
+    fbEl.innerHTML = (kind === "ok" ? '<span class="mark ok" aria-hidden="true">✓</span> ' : '<span class="mark no" aria-hidden="true">✗</span> ') + text;
+    fbEl.hidden = false;
+    Activity.announce((kind === "ok" ? "Correct. " : "Not correct. ") + text.replace(/<[^>]+>/g, ""));
+  }
+
+  function renderPath() {
+    var items = pathEl.querySelectorAll("li");
+    for (var i = 0; i < items.length; i++) {
+      items[i].className = (i === state.idx && !state.done[i] ? "is-current" : "") + (state.done[i] ? " is-done" : "");
+      var base = items[i].textContent.replace(/\s*✓\s*done$/, "");
+      items[i].innerHTML = base + (state.done[i] ? ' <span class="mark ok">✓ done</span>' : "");
+    }
+  }
+
+  function renderNode() {
+    var n = NODES[state.idx];
+    titleEl.textContent = n.title;
+    lineEl.innerHTML = "<strong>Maya:</strong> “" + n.line + "”";
+    fbEl.hidden = true;
+    conEl.hidden = true;
+    nextBtn.hidden = true;
+    state.phase = "pick";
+    state.attempts = 0;
+    optsEl.innerHTML = "";
+    for (var i = 0; i < n.options.length; i++) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "maya-opt";
+      b.setAttribute("data-idx", i);
+      b.innerHTML = '<span class="maya-letter">' + LETTERS[i] + ')</span><span>' + n.options[i] + '</span>';
+      optsEl.appendChild(b);
+    }
+    renderPath();
+    stageEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function markButton(idx, cls) {
+    var b = optsEl.querySelector('[data-idx="' + idx + '"]');
+    if (!b) return;
+    b.className = "maya-opt " + cls;
+    var glyph = cls === "is-correct" ? '<span class="mark ok" aria-hidden="true">✓</span>' : '<span class="mark no" aria-hidden="true">✗</span>';
+    b.innerHTML = glyph + b.innerHTML;
+    b.disabled = true;
+  }
+
+  function disableAll() {
+    var bs = optsEl.querySelectorAll("button");
+    for (var i = 0; i < bs.length; i++) bs[i].disabled = true;
+  }
+
+  function onPick(idx) {
+    if (state.phase !== "pick") return;
+    var n = NODES[state.idx];
+    var ok = idx === n.correct;
+    if (state.attempts === 0 && firstAttempt[state.idx] === null) firstAttempt[state.idx] = ok;
+    state.attempts++;
+    if (!ok) {
+      markButton(idx, "is-wrong");
+      setFeedback("no", n.feedback[idx] + " Choose again.");
+      return;
+    }
+    state.phase = "resolved";
+    state.done[state.idx] = true;
+    markButton(idx, "is-correct");
+    disableAll();
+    setFeedback("ok", "That's the helping response.");
+    var last = state.idx === NODES.length - 1;
+    conEl.innerHTML = "<strong>" + (last ? "Ending." : "What happens next.") + "</strong> " + n.consequence;
+    conEl.hidden = false;
+    renderPath();
+    nextBtn.textContent = last ? "See the recap" : "Continue";
+    nextBtn.hidden = false;
+    nextBtn.focus();
+    if (last) complete();
+  }
+
+  function complete() {
+    Activity.setReady(true, "The conversation has reached its ending — you may finish the activity.");
+    if (summarized) return;
+    summarized = true;
+    var right = [], missed = [];
+    for (var i = 0; i < NODES.length; i++) {
+      (firstAttempt[i] === true ? right : missed).push(NODES[i].name);
+    }
+    var score = Math.round(right.length / NODES.length * 100);
+    var note = "First-attempt accuracy: " + right.length + " of 6 turns. " + RECAP;
+    Activity.summarize({ score: score, right: right, missed: missed, note: note });
+  }
+
+  function onNext() {
+    if (state.phase !== "resolved") return;
+    if (state.idx < NODES.length - 1) {
+      state.idx++;
+      renderNode();
+      return;
+    }
+    stageEl.hidden = true;
+    endingEl.hidden = false;
+    endingEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    restartBtn.focus();
+    Activity.announce("Ending reached. She nods. Thursday? After lifting? You put it in your calendar.");
+  }
+
+  function restart() {
+    // Resets scenario state only; firstAttempt / summarized stay untouched so the recorded score is frozen.
+    state = freshState();
+    endingEl.hidden = true;
+    stageEl.hidden = false;
+    renderNode();
+    Activity.announce("Scenario restarted for practice. Your recorded score does not change.");
+  }
+
+  optsEl.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-idx]");
+    if (!b || b.disabled) return;
+    onPick(parseInt(b.getAttribute("data-idx"), 10));
+  });
+  nextBtn.addEventListener("click", onNext);
+  restartBtn.addEventListener("click", restart);
+
+  state = freshState();
+  renderNode();
+})();
+</script>
+</body>
+</html>
